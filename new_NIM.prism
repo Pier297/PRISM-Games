@@ -1,0 +1,47 @@
+smg
+
+player player1 ply1, [remove_pile1_1], [remove_pile2_1], [remove_pile3_1], [pass_turn1] endplayer
+player player2 ply2, [remove_pile1_2], [remove_pile2_2], [remove_pile3_2], [pass_turn2] endplayer
+
+module ply1
+	pile_chosen1 : [0..3] init 0;
+	
+	[remove_pile1_1] turn = 1 & pile1 > 0 & (pile_chosen1 = 0 | pile_chosen1=1) -> (pile_chosen1'=1);
+	[remove_pile2_1] turn = 1 & pile2 > 0 & (pile_chosen1 = 0 | pile_chosen1=2) -> (pile_chosen1'=2);
+	[remove_pile3_1] turn = 1 & pile3 > 0 & (pile_chosen1 = 0 | pile_chosen1=3) -> (pile_chosen1'=3);
+	[pass_turn1] pile_chosen1 > 0 -> (pile_chosen1'=0); 
+endmodule
+
+
+module ply2
+	pile_chosen2 : [0..3] init 0;
+	
+	[remove_pile1_2] turn = 2 & pile1 > 0 & (pile_chosen2 = 0 | pile_chosen2=1) -> (pile_chosen2'=1);
+	[remove_pile2_2] turn = 2 & pile2 > 0 & (pile_chosen2 = 0 | pile_chosen2=2) -> (pile_chosen2'=2);
+	[remove_pile3_2] turn = 2 & pile3 > 0 & (pile_chosen2 = 0 | pile_chosen2=3) -> (pile_chosen2'=3);
+	[pass_turn2] pile_chosen2 > 0 -> (pile_chosen2'=0);
+endmodule
+
+
+module NIM
+	pile1 : [0..10] init 3;
+	pile2 : [0..10] init 4;
+	pile3 : [0..10] init 5;
+	turn : [1..2] init 1;
+	winner : [0..2] init 0;
+
+	[remove_pile1_1] pile1 > 0 -> (pile1'=pile1-1);
+	[remove_pile1_2] pile1 > 0 -> (pile1'=pile1-1);
+
+	[remove_pile2_1] pile2 > 0 -> (pile2'=pile2-1);
+	[remove_pile2_2] pile2 > 0 -> (pile2'=pile2-1);
+
+	[remove_pile3_1] pile3 > 0 -> (pile3'=pile3-1);
+	[remove_pile3_2] pile3 > 0 -> (pile3'=pile3-1);
+
+	[pass_turn1] true -> (turn'=2);
+	[pass_turn2] true -> (turn'=1);
+	
+	// Wins who remove the last element
+	[ ] pile1 = 0 & pile2 = 0 & pile3 = 0 -> (winner' = turn);
+endmodule
